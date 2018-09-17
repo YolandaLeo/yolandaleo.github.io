@@ -9,6 +9,8 @@ Sequentially append data cost O(n) -> index comes
 Any index slows down writes, because the index also needs to be updated every time data is written -> well-chosen index
 
 <!--more-->
+### Transactional Data Processing
+
 #### Log Structured Indexes
 * Log segments with Hash Index
 Key-value: dictionary type, implemented as a hash map
@@ -52,11 +54,35 @@ c:
 Multi-column indexes: Specialized spatial indexes such as R-Trees
 Full-text search and fuzzy indexes: search distance, document classification, machine learning
 
-## Storige engines for transactional workloads
-Low latency, needn't have ACID properties (will discuss in CH07))
+#### Storige engines for transactions or analysis
+Online Transaction Processing (OLTP): Low latency, needn't have ACID properties (will discuss in CH07))
+Online Analytic Processing (OLAP)
+
+Property | OLTP | OLAP
+| ----------- | ----------- | ---------- |
+Main Read Pattern | Small number of records per query, fetched by key | Aggregate over large number of records
+Main Write Pattern | Random access, low latency writes from user input | Bulk import (ETL) or event stream
+Primarily used by | End user/customer, via web application | Internal analyst, for dicision support
+What data represents | Latest state of data (current point of time) | History of events that happened over time
+Dataset size | Gb - Tb | Tb - Pb
 
 
+### Analytic Data Processing - Data Warehousing
+Extract - Transform - Load (The famouse ETL process)
+To sacrifice the different query patterns from transactional usage to analytic usage, there emerged data warehouse vendors.
+Star Schema, snowflake shema
+Usually, analysts do not need all columns from the wide table (select * from table)
+=> * Column-Oriented Storage * : don't store all the values from one row together, but store all the values from each column together instead.
+> eg. Parquet
 
+* Column Compression *: column values often look quite repetitive which is a good sign for compression
+> eg. bitmap encoding
+ (Cassandra, HBase inherited from Bigtable using column families are mostly row-oriented)
 
-- Storage engines for analytics
+ #### Writing solution: LST-trees
+ #### Aggregation: Data Cubes and Materialized Views
+ - materialized aggregates: COUNT, SUM, AVG, MIN, MAX
+ - materialized view
+    - data cube: each cell contains the fact for a particular combination -> act as a performance boost for certain queries
+ - virtual view
 
