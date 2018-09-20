@@ -71,11 +71,11 @@ Dataset size | Gb - Tb | Tb - Pb
 Extract - Transform - Load (The famouse ETL process)
 To sacrifice the different query patterns from transactional usage to analytic usage, there emerged data warehouse vendors.
 Star Schema, snowflake shema
-Usually, analysts do not need all columns from the wide table (select * from table)
-=> * Column-Oriented Storage * : don't store all the values from one row together, but store all the values from each column together instead.
+Usually, analysts do not need all columns from the wide table (*select * from table*)
+=> **Column-Oriented Storage** : don't store all the values from one row together, but store all the values from each column together instead.
 > eg. Parquet
 
-* Column Compression *: column values often look quite repetitive which is a good sign for compression
+**Column Compression**: column values often look quite repetitive which is a good sign for compression
 > eg. bitmap encoding
  (Cassandra, HBase inherited from Bigtable using column families are mostly row-oriented)
 
