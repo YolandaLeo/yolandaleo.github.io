@@ -1,10 +1,10 @@
 ---
 layout: post
 categories: 'book note'
-title: "『Designing Data Intensive Applications』 读书笔记"
+title: "『Designing Data Intensive Applications』- CH03 读书笔记"
 ---
 
-## Chapter 3 Storage and Retrieval
+## Storage and Retrieval
 Sequentially append data cost O(n) -> index comes
 Any index slows down writes, because the index also needs to be updated every time data is written -> well-chosen index
 
