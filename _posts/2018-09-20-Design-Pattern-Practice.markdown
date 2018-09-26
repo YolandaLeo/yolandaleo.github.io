@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: ['java', 'design']
-title: "工作中的设计模式"
+title: "工作中的设计模式(Draft"
 ---
 
 最近刚好在通过Sonar审视自己项目的代码，解决了一些比较明显的Vulnerabilities之后，发现项目中有许多subclass都出现了因为@Inject一些组件，以及初始化，注册变量等导致Sonar报出大量Duplicate code smell。虽然可以通过设置Sonar rule来绕过这些可能不必要的警告，但是我决定先看看有没有更优雅的方案。
