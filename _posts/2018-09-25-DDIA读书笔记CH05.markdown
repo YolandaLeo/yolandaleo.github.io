@@ -118,7 +118,7 @@ Hinted handoff: once the network interruption is fixed, any writes that one node
 => it's only an assurance of durability, namely that the data is stored on w nodes somewhere.
 
 #### Detecting Concurrent Writes
-To get eventual consistency, the replicas should converge toward the same value. **The application developers need to know a lot about the internals of your databases conflict handling** (because most implementations of db are quite poor)
+ 
 - Last write wins (discarding concurrent writes)
     Declare each replica need only store the most "recent" value and allow "older" values to be overwritten and discarded. Misleading: the writes are *concurrent* so their order is undefined. -> timestamp solution: LWW</br>
     LWW may even drop writes that are not concurrent (discuss later) -> If losing data is not acceptable, LWW is a poor choice.</br>

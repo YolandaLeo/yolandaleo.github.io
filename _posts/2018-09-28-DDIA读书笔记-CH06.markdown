@@ -1,0 +1,6 @@
+---
+layout: post
+categories: 'book note'
+title: "『DDIA』- CH06: Partition 读书笔记"
+---
+

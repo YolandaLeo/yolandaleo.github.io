@@ -62,7 +62,7 @@ Property | OLTP | OLAP
 | ----------- | ----------- | ---------- |
 Main Read Pattern | Small number of records per query, fetched by key | Aggregate over large number of records
 Main Write Pattern | Random access, low latency writes from user input | Bulk import (ETL) or event stream
-Primarily used by | End user/customer, via web application | Internal analyst, for dicision support
+ 
 What data represents | Latest state of data (current point of time) | History of events that happened over time
 Dataset size | Gb - Tb | Tb - Pb
 
