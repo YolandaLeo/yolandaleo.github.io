@@ -4,3 +4,8 @@ categories: 'book note'
 title: "『DDIA』- CH06: Partition 读书笔记"
 ---
 
+### Partitioning and Replication Combination
+### Partitioning of Key-Value Data
+
+ 
+<!--more-->
