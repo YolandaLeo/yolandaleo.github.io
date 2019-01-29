@@ -1,0 +1,45 @@
+---
+layout: post
+categories: 'book note'
+title: "『Designing Data Intensive Applications』- CH04 读书笔记"
+---
+
+## Encoding and Evolution
+- encoding: in-memory objects -> sequence of bytes
+- decoding: reversed
+
+> Language specified formats such as Java's Serializable get lots of defects in encoding and decoding.
+> - Not compatible with different languages
+> - Arbitrary classes cause security problems
+> - Inconvenience of versioning data
+> - Efficiency
+
+#### JSON, XML, and Binary Variants
+Although popular, still have some subtle problems:
+- ambiguity around encoding of numbers: number - string, integers - floting-point numbers, precision, large numbers
+- Unicode, Binary strings of Base64-encoded
+- optional schema support causing applications may potentially hardcode the appropriate encoding/decoding logic
+- CSV vague format
+
+There are methods of encoding to bytes, generally, they use field tag numbers to indicate unique field, and field type and size. Using unique field tag (Thrift and Protocol Buffers) instead of keeping field name in encoded sequence (Binary Encoding) can reduce sequence size.
+
+Avro maintains the most compact schema without keeping field type and tag numbers. Reader's and writer's schema will help encode and decode the bytes, the schema don't have to be the same, but they have to be compatible. Solving the schema revolution problem, the Avro schema field only need to have default value for evoluted fields.
+
+#### Models of Dataflow
+* Dataflow Through Databases
+You can think of storing something in the database as *sending a message to your future self*.
+If you decode a database value into a model object in the application, and later re-encode the model object, the unknown new field might be lost in the translation process. (Decoder is using older version schema) Just be careful.
+* Dataflow through Services: REST and RPC
+clients <-- service API --> servers
+Problems with RPCs:
+1. network request is unpredictable: may be lost due to a network problem, or the remote machine may be slow or unavailable
+2. network request has another possible outcome besides returning a result, throwing an exception or never returns: may return without a result due to a timeout
+3. retry may cause the action to be performed multiple times unless you build a mechanism for idempotence
+4. latency is wildly variable
+5. all network requests need to be encoded into a sequence of bytes that can be sent over the network
+6. different implementing languages between client and server
+
+#### Message-Passing Dataflow
+Asynchronous.
+Akka, Orleans, Erlang OTP
+

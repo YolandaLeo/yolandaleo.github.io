@@ -1,0 +1,142 @@
+---
+layout: post
+categories: 'book note'
+title: "『DDIA』- CH05: Replication 读书笔记"
+---
+
+This is the beginnign of Part 2, and will start to talk about distributed data storage.</br>
+
+Why we need distributed database?</br>
+Scalability, fault tolerance / high availability, latency.
+
+#### Scaling to higher load
+- Shared-memory architecture: all components can be treated as a single machine (vertical scaling / scaling up)
+    - Problem:cost grows faster than linearly 
+- Shared-disk architecture: independent CPUs and RAM but stores data on an array of disks connected via a fast network
+    - Problem: contention and overhead of locking limit the scalability
+  
+**Contrast**:
+- Shared-nothing architecture: independent nodes coordinates at the software level using a conventional network (horizontal scaling / scaling out)
+    - requires the most caution from the application developers
+
+<!--more-->
+
+**Why need replication**?
+1. To keep data geographically close to your users (reduce latency)
+2. To allow the system to continue working even if some of its parts have failed (increase availability)
+3. To scale out the number of machines that can serve read queries (increase read thoughput)
+
+Assumption: the dataset is small enough to be hold by one single machine.
+
+#### Leaders and Followers
+Ensure all the data ends up on all the replicas: leader-based replication (active/passive or master-slave replication)
+#### Synchronous Versus Asyncronous Replication
+It's impractical to get all followers synchronous, but semi-synchromous can do the job: garantees you have an up-to-date copy of the data on at lease two nodes: the leader and one synchronous follower.</br>
+All synchonous, all asynchronous..</br>
+
+#### Setting up New Followers
+1. Take a snapshot of leader's db without locking the whole db
+2. copy the snapshot to the new follower's node
+3. request all changes since the snapshot was taken (binlog / log sequece)
+4. after catch up with the leader, can continue processing new data changes
+
+#### Handling Node Outages
+How to achieve high availability with leader-based replication???
+
+- Follower failure: catch-up recovery --- knowing the last transaction the follower has processed, just follow up with the log
+- Leader failure: failover --- one follower needs to be promoted to be the new leader
+    - Determining that the leader has failed: heartbeat timeout
+    - Choosing a new leader: best with the most up-to-date data node
+    - Reconfiguring the system to use the new leader
+
+Split brain: when two nodes both believe they are the leader
+
+#### Implementation of Replication Logs
+- Statement-based replication
+- Write-ahead log shipping
+- Logical (row-based) log
+- Trigger-based: triggers and stored procedures
+
+#### Problems with Replication Lag
+Sync: cannot have many follower nodes because of the whole system latency</br>
+Async: read queries may find data fallen behind</br>
+=> eventually consistency
+
+##### 1. Reading your own writes
+read-after-write consistency (read-yours-writes consistency): reassures the user that their own input has been saved correctly
+- When reading sth the user may have modified, read from the leader.
+- Tracking time of last update
+- The client remember the timestamp pf the most recent write
+- Requests need to be routed to the datacenter that contains the leader
+
+##### 2. Monotonic Reads
+Asynchronous followers can lead to users seeing thing moving backward in time: when a user makes several reads from different replicas.</br>
+Strong consistency > Monotonic reads > eventual consistency</br>
+One way to achieve: make sure each user always makes their reads from the same replica</br>
+
+##### 3. Consistent Prefix Reads
+If a sequence of writes happens in a certain order, then anyone reading those writes will see them appear in the same order.
+Usually happens in partitioned databases
+
+##### Solutions
+Transactions. Talk later in CH07 and CH09.
+
+
+#### Multi-Leader Replication (master-master / active/active replication)
+Use cases (benifits outweigh the added complexity):
+1. Multi-datacenter operation
+2. Performance
+3. Tolerance of datacenter outages
+4. Tolenrance of network problems
+5. Clients with offline operation (eg. Calendar in different divices)
+6. (In common) Collaborative editing (To allow users edit simultaneously, unit of change needs to be very small and avoid locking, still need handling write conflicts)</br>
+Downside: the same data may be concurrently modified in two different datacenters, and those write conflicts must be resolved
+
+##### How to solve write conflicts?
+To avoid conflict: ensure all writes for a particular record go through the same leader.
+Converging toward a consistent state: 
+* Give each write a unique id and pick the write with the highest id as the winner (popular last write wins)
+* Give each replica a unique id
+* record the conflict in an explicit data structure and preserves all information, to be resolved by user
+conflict resolution is considered separately for different writes even in a single transaction
+
+#### Leaderless Replication
+Dynamo-style: Riak, Cassandra, Voldemort</br>
+Nodes using version numbers to determine data stale</br>
+How to define successful write (n replica, confirmed by w nodes, query at least r nodes for read)?</br>
+As long as w + r > n, we expect to get an up-to-date reading.</br>
+This quorum allows the system to tolerate unavailable nodes as follows:
+- If w < n, we can still process writes if a node is unavailable
+- If r < n, we can still process reads if a node is unavailable
+- With n = 3, w = 2, r = 2 we can tolerate 1 unavailable node
+- With n = 5, w = 3, r = 3 we can tolerate 2 unavailable nodes. 
+- Normally, reads and writes are always sent to all n replicas in parallel. w and r determine how many nodes we wait for.
+
+**But in fact, it is not that simple.**
+Slopply quorum: writes and reads still require w and r successful responses, but those may include nodes that are not among the designated n "home" nodes for a value.
+Hinted handoff: once the network interruption is fixed, any writes that one node temporarily accepted on behalf of another node are sent to the appropriate "home" nodes.
+=> it's only an assurance of durability, namely that the data is stored on w nodes somewhere.
+
+#### Detecting Concurrent Writes
+ 
+- Last write wins (discarding concurrent writes)
+    Declare each replica need only store the most "recent" value and allow "older" values to be overwritten and discarded. Misleading: the writes are *concurrent* so their order is undefined. -> timestamp solution: LWW</br>
+    LWW may even drop writes that are not concurrent (discuss later) -> If losing data is not acceptable, LWW is a poor choice.</br>
+    Only safe way to use LWW: ensure a key only written once and immutable (eg. Cassandra uses UUID as the key)
+- The "happens-before" relationship and concurrency
+    We can simply say that two operations are concurrent if neither happens before the other (neither knows about the other).</br>
+    *Understand concurrency, time and relativity.*
+- Capturing the happens-before relationship
+    - The server maintains a version number for every key, ++ eveytime the key is written, and stores new version number along with the value written
+    - When a client reads a key, the server returns all values not been overwritten as well as the latest version number. A client must read a key before writing.
+    - When a client writes a key, it must include the version no. from the prior read and merge together all values received in the prior read.</br>
+    - When the server receives a write with a particular version no., it can overwrite all values with that version no. or below.</br>
+- Merging concurrently written values
+    The algorithm ensures no data is silently dropped but the clients need to do some extra work.</br>
+    Merging sibling values - conflict resolution in multiple-leader replication</br>
+    Deletion is marked with a tombstone not just delete from the database.</br>
+- Version vectors
+    Multiple replicas? a version number per replica as well as per key, and keep track of the version numbers from each of other replicas.</br>
+    The dotted version vector in Riak 2.0
+    
+

@@ -1,0 +1,88 @@
+---
+layout: post
+categories: 'book note'
+title: "『Designing Data Intensive Applications』- CH03 读书笔记"
+---
+
+## Storage and Retrieval
+Sequentially append data cost O(n) -> index comes
+Any index slows down writes, because the index also needs to be updated every time data is written -> well-chosen index
+
+<!--more-->
+### Transactional Data Processing
+
+#### Log Structured Indexes
+* Log segments with Hash Index
+Key-value: dictionary type, implemented as a hash map
+Good situation: 
+> where the value for each key is updated frequently
+> lots of writes, but not too many distinct keys, eg. videos and the number of times it has been played
+
+Large size -> compaction, append-only data segments
+Simple but: must fit in memory, range queries are not efficient
+
+* Sorted String Table
+merge-sort keys
+with B-Trees / red-black trees can insert key in any order and read them in sorted order
+
+
+* Log-Structured Merge-Tree
+Slow when checking keys do not exist in database: check the memtable, then the segments all the way back to the oldest
+keeping a cascade of SSTables that are merged in the background
+
+
+#### B-Trees
+Break the database down into fixed-size blocks, traditionally 4KB, read/write one page at a time => corrosponds more closely to hardware
+n keys has a depth of O(log n)
+try: calculate a four-level tree of 4KB pages with a branching factor of 50 can store how much data?
+Making overwrite pages resilient: write-ahead log (also redo log)
+=> Copy-on-write scheme
+
+
+#### Pros and Cons of LSM to B
+p:
+- LSM-trees are typically sustain higher write throughput than B-trees partly because sometimes have lower write amplification,
+sequentially write compact SSTable files rather than having to overwrite several pages
+- LSM-trees can be compressed better, produce smaller files on disk
+
+c:
+- compaction process can sometimes interfere with ongoing reads and writes -> response time can be quite high
+- high write throughput
+- LSM-Trees may have multiple copies of the same key in different segments while B-Trees only one, making B-Trees more attractive in strong transactional sementics
+  
+#### Other indexes
+Multi-column indexes: Specialized spatial indexes such as R-Trees
+Full-text search and fuzzy indexes: search distance, document classification, machine learning
+
+#### Storige engines for transactions or analysis
+Online Transaction Processing (OLTP): Low latency, needn't have ACID properties (will discuss in CH07))
+Online Analytic Processing (OLAP)
+
+Property | OLTP | OLAP
+| ----------- | ----------- | ---------- |
+Main Read Pattern | Small number of records per query, fetched by key | Aggregate over large number of records
+Main Write Pattern | Random access, low latency writes from user input | Bulk import (ETL) or event stream
+ 
+What data represents | Latest state of data (current point of time) | History of events that happened over time
+Dataset size | Gb - Tb | Tb - Pb
+
+
+### Analytic Data Processing - Data Warehousing
+Extract - Transform - Load (The famouse ETL process)
+To sacrifice the different query patterns from transactional usage to analytic usage, there emerged data warehouse vendors.
+Star Schema, snowflake shema
+Usually, analysts do not need all columns from the wide table (*select * from table*)
+=> **Column-Oriented Storage** : don't store all the values from one row together, but store all the values from each column together instead.
+> eg. Parquet
+
+**Column Compression**: column values often look quite repetitive which is a good sign for compression
+> eg. bitmap encoding
+ (Cassandra, HBase inherited from Bigtable using column families are mostly row-oriented)
+
+ #### Writing solution: LST-trees
+ #### Aggregation: Data Cubes and Materialized Views
+ - materialized aggregates: COUNT, SUM, AVG, MIN, MAX
+ - materialized view
+    - data cube: each cell contains the fact for a particular combination -> act as a performance boost for certain queries
+ - virtual view
+
