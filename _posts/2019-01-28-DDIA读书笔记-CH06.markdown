@@ -4,8 +4,63 @@ categories: 'book note'
 title: "『DDIA』- CH06: Partition 读书笔记"
 ---
 
-### Partitioning and Replication Combination
-### Partitioning of Key-Value Data
+## Partitioning and Replication Combination
+## Partitioning of Key-Value Data
+- Skewed
 
- 
+### 1. Partitioning by Key Range
+ - Hot spot, eg. timestamp
+
+
+### 2. Partitioning by Hash of Key
+- The hash function need not be cryptographocally strong, but need to have same hash value for the same key in different processes.
+- [Consistent hashing](https://en.wikipedia.org/wiki/Consistent_hashing)
+
+
 <!--more-->
+### 3. Skewd Workloads and Relieaving Hot Spots
+- Trade offs
+
+## Partitioning and Secondary Indexes
+### 1. Document-based Partitioning
+- local index (Only need to deal with the partition that contains the document ID that you are writing)
+- Send query to all partitions and combine all the results
+- MongoDB, Cassandra, Elasticsearch
+
+
+### 2. Term-based Partitioning
+- Global index, also be partitioned, but can be partitioned differently from the primary key index
+- The term can be partitioned for range scans or even distribution of load
+- Reads more efficient / writes slower and more complicated
+
+## Rebalancing Partitions
+Requirements:
+- After rebalancing, the load (data storage, read and write requests) should be shared fairly between the nodes in the cluster.
+- While rebalancing is happening, the database should continue accepting reads and writes.
+- No more data than necessary should be moved between nodes, to make rebalanc‐ ing fast and to minimize the network and disk I/O load.
+
+### Strategies for Rebalancing
+1. Fixed number of partitions
+We can assign much more partitions than the number of nodes, so that multiple partitions can be on the same node.<\br>
+When adding nodes, we only need to pick up partitions from old nodes and move them to the new nodes until a new balance.
+
+2. Dynamic partitioning
+B-Tree<\br>
+pre-spilitting
+
+3. Partitioning Proportionally to nodes
+Have a fixed number of partitions per node.<\br>
+When a new node joining the cluster, it randomly chooses a fixed number of existing partitions to split, and then takes ownership of one half of each of those split partitions while leaving the other half of each partition in place.
+
+### Operations: Automatic or Manual Rebalancing
+
+## Request Routing
+> Service discovory.
+Protocols for achieving consensus in a distributed system, but they are hard to implement correctly.
+Zookeeper: keep track of this cluster metadata. Each node register itself in ZooKeeper and  Zookeeper maintains the authoritative mapping of partitions to nodes.
+
+Routing tier / partitioning-aware client can subscribe to this information in Zookeeper.
+
+Massively Parallel Processing.
+
+
