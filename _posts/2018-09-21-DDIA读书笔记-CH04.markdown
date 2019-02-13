@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: 'book note'
-title: "『Designing Data Intensive Applications』- CH04 读书笔记"
+title: "『Designing Data Intensive Applications』- CH04 Reading Notes"
 ---
 
 ## Encoding and Evolution

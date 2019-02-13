@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: 'book note'
-title: "『DDIA』- CH05: Replication 读书笔记"
+title: "『DDIA』- CH05: Replication Reading Notes"
 ---
 
 This is the beginnign of Part 2, and will start to talk about distributed data storage.</br>
@@ -89,8 +89,7 @@ Use cases (benifits outweigh the added complexity):
 3. Tolerance of datacenter outages
 4. Tolenrance of network problems
 5. Clients with offline operation (eg. Calendar in different divices)
-6. (In common) Collaborative editing (To allow users edit simultaneously, unit of change needs to be very small and avoid locking, still need handling write conflicts)</br>
-Downside: the same data may be concurrently modified in two different datacenters, and those write conflicts must be resolved
+6. (In common) Collaborative editing (To allow users edit simultaneously, unit of change needs to be very small and avoid locking, still need handling write conflicts)</br>Downside: the same data may be concurrently modified in two different datacenters, and those write conflicts must be resolved
 
 ##### How to solve write conflicts?
 To avoid conflict: ensure all writes for a particular record go through the same leader.
@@ -120,21 +119,16 @@ Hinted handoff: once the network interruption is fixed, any writes that one node
 #### Detecting Concurrent Writes
  
 - Last write wins (discarding concurrent writes)
-    Declare each replica need only store the most "recent" value and allow "older" values to be overwritten and discarded. Misleading: the writes are *concurrent* so their order is undefined. -> timestamp solution: LWW</br>
-    LWW may even drop writes that are not concurrent (discuss later) -> If losing data is not acceptable, LWW is a poor choice.</br>
-    Only safe way to use LWW: ensure a key only written once and immutable (eg. Cassandra uses UUID as the key)
+    Declare each replica need only store the most "recent" value and allow "older" values to be overwritten and discarded. Misleading: the writes are *concurrent* so their order is undefined. -> timestamp solution: LWW</br>LWW may even drop writes that are not concurrent (discuss later) -> If losing data is not acceptable, LWW is a poor choice.</br>Only safe way to use LWW: ensure a key only written once and immutable (eg. Cassandra uses UUID as the key)
 - The "happens-before" relationship and concurrency
-    We can simply say that two operations are concurrent if neither happens before the other (neither knows about the other).</br>
-    *Understand concurrency, time and relativity.*
+    We can simply say that two operations are concurrent if neither happens before the other (neither knows about the other).</br>*Understand concurrency, time and relativity.*
 - Capturing the happens-before relationship
     - The server maintains a version number for every key, ++ eveytime the key is written, and stores new version number along with the value written
     - When a client reads a key, the server returns all values not been overwritten as well as the latest version number. A client must read a key before writing.
     - When a client writes a key, it must include the version no. from the prior read and merge together all values received in the prior read.</br>
     - When the server receives a write with a particular version no., it can overwrite all values with that version no. or below.</br>
 - Merging concurrently written values
-    The algorithm ensures no data is silently dropped but the clients need to do some extra work.</br>
-    Merging sibling values - conflict resolution in multiple-leader replication</br>
-    Deletion is marked with a tombstone not just delete from the database.</br>
+    The algorithm ensures no data is silently dropped but the clients need to do some extra work.</br>Merging sibling values - conflict resolution in multiple-leader replication</br>Deletion is marked with a tombstone not just delete from the database.</br>
 - Version vectors
     Multiple replicas? a version number per replica as well as per key, and keep track of the version numbers from each of other replicas.</br>
     The dotted version vector in Riak 2.0

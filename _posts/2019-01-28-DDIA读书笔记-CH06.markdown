@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: 'book note'
-title: "『DDIA』- CH06: Partition 读书笔记"
+title: "『DDIA』- CH06: Partition Reading Notes"
 ---
 
 ## Partitioning and Replication Combination
@@ -13,7 +13,7 @@ title: "『DDIA』- CH06: Partition 读书笔记"
 
 
 ### 2. Partitioning by Hash of Key
-- The hash function need not be cryptographocally strong, but need to have same hash value for the same key in different processes.
+- The hash function need not be cryptographocally strong, but need to have same hash value for the same key in different processes. [REF reading: Java's hashCode is not safe for distributed systems] (http://martin.kleppmann.com/2012/06/18/java-hashcode-unsafe-for-distributed-systems.html)
 - [Consistent hashing](https://en.wikipedia.org/wiki/Consistent_hashing)
 
 
@@ -41,21 +41,20 @@ Requirements:
 
 ### Strategies for Rebalancing
 1. Fixed number of partitions
-We can assign much more partitions than the number of nodes, so that multiple partitions can be on the same node.<\br>
-When adding nodes, we only need to pick up partitions from old nodes and move them to the new nodes until a new balance.
+We can assign much more partitions than the number of nodes, so that multiple partitions can be on the same node.</br>When adding nodes, we only need to pick up partitions from old nodes and move them to the new nodes until a new balance.
 
 2. Dynamic partitioning
-B-Tree<\br>
+B-Tree
 pre-spilitting
 
 3. Partitioning Proportionally to nodes
-Have a fixed number of partitions per node.<\br>
-When a new node joining the cluster, it randomly chooses a fixed number of existing partitions to split, and then takes ownership of one half of each of those split partitions while leaving the other half of each partition in place.
+Have a fixed number of partitions per node.</br>When a new node joining the cluster, it randomly chooses a fixed number of existing partitions to split, and then takes ownership of one half of each of those split partitions while leaving the other half of each partition in place.
 
 ### Operations: Automatic or Manual Rebalancing
 
 ## Request Routing
 > Service discovory.
+> 
 Protocols for achieving consensus in a distributed system, but they are hard to implement correctly.
 Zookeeper: keep track of this cluster metadata. Each node register itself in ZooKeeper and  Zookeeper maintains the authoritative mapping of partitions to nodes.
 

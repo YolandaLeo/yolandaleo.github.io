@@ -13,3 +13,4 @@ gem 'jekyll'
 gem 'jekyll-paginate'
 gem 'kramdown'
 gem 'pygments.rb'
+gem "nokogiri", ">= 1.8.5"
