@@ -160,3 +160,4 @@ How does the db know if a query result might have changed?
 * Detecting writes that affect prior reads
 
 ![avatar](https://raw.githubusercontent.com/YolandaLeo/ddia/master/img/fig7-10.png)
+![avatar](https://raw.githubusercontent.com/YolandaLeo/ddia/master/img/fig7-11.png)
