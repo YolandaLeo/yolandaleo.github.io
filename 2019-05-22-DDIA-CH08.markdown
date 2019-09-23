@@ -1,0 +1,7 @@
+---
+layout: post
+categories: 'book note'
+title: "『DDIA』CH08 - Trouble w/ Distributed Systems"
+---
+
+## Faults and Partial Failures

@@ -6,6 +6,7 @@ title: "Flink Custom Stream Join"
 
 In this notes, I'll instroduce several Window experiments in Flink, then show my POC sample code on how to solve an two stream join with a dense input and a sparse one.
 The following experiments are based on SocketWordCount job, with text as input stream.
+<!--more-->
 
 ##SlidingWindow Experiment
 SlidingWindow(Time.second(30), Time.second(5))
