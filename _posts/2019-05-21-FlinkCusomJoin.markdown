@@ -1,6 +1,7 @@
 ---
 layout: post
-categories: 'flink'
+categories: 'development'
+tag: flink
 title: "Flink Custom Stream Join"
 ---
 

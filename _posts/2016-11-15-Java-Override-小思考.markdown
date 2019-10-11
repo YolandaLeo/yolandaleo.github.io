@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "对于Java中override的小思考"
-categories: java
+categories: development
+tag: java
 ---
 
 对于以下代码的执行结果还是有点儿在我意料之外的,经过stackOverFlow的解释,对java中Override的方法有了一点新的认识,之前的理解还是不够深入.

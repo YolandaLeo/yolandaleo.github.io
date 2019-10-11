@@ -1,6 +1,7 @@
 ---
 layout: post
-categories: ['java', 'design']
+categories: ['development']
+tag: design
 title: "工作中的设计模式(Draft"
 ---
 

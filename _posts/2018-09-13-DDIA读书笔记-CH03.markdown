@@ -1,7 +1,8 @@
 ---
 layout: post
-categories: 'book note'
-title: "『Designing Data Intensive Applications』- CH03 Reading Notes"
+categories: 'notes'
+tag: DDIA
+title: "『DDIA』- CH03 Reading Notes"
 ---
 
 ## Storage and Retrieval

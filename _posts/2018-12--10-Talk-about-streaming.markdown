@@ -1,6 +1,7 @@
 ---
 layout: post
-categories: 'book note'
+categories: 'notes'
+tag: flink
 title: "Talk about Data Streaming I"
 ---
 

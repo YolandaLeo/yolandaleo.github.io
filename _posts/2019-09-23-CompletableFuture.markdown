@@ -1,6 +1,7 @@
 ---
 layout: post
-categories: 'java'
+categories: 'development'
+tag: java
 title: "How to leverage CompletableFuture to reach non-blocking service dependent system?"
 ---
 
