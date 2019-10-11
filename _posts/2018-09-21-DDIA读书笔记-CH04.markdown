@@ -13,6 +13,7 @@ title: "『Designing Data Intensive Applications』- CH04 Reading Notes"
 > - Arbitrary classes cause security problems
 > - Inconvenience of versioning data
 > - Efficiency
+<!--more-->
 
 #### JSON, XML, and Binary Variants
 Although popular, still have some subtle problems:
