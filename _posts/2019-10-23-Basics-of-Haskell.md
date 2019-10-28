@@ -2,12 +2,12 @@
 layout: post
 categories: 'development'
 tag: Haskell
-title: Basics of Haskell Learning
+title: Basics of Haskell Learning I
 ---
 My Haskell guide: [Learn You a Haskell for Great Good!](http://learnyouahaskell.com/chapters)
 It is a pretty fun guide leading freshmen into the Haskell world:)
 
-<!-- more -->
+<!--more-->
 It seems named functions are of highest priority when executing:
 ```Haskell
 Prelude> succ 9 * 10
@@ -75,4 +75,25 @@ Prelude> [adjective ++ " " ++ noun | adjective <- adjectives, noun <- nouns]
 Prelude> length' xs = sum[1 | _<-xs]
 Prelude> length' adjectives
 3
+```
+
+**tuple**
+```Haskell
+Prelude> fst (8,11)
+8
+Prelude> snd (8,11)
+11
+Prelude> zip [1,2,3,4,5] [5,5,5,5,5]
+[(1,5),(2,5),(3,5),(4,5),(5,5)]
+Prelude> zip [1..] ["apple", "orange", "cherry", "mango"]
+[(1,"apple"),(2,"orange"),(3,"cherry"),(4,"mango")]  
+```
+Cute functions, huh?
+Let's get the comprehension and tuple functions into a simple application.
+```Haskell
+Prelude> let triangles = [ (a,b,c) | c <- [1..10], b <- [1..10], a <- [1..10] ]
+Prelude> let rightTriangles = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2]   
+Prelude> let rightTriangles' x = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2, a+b+c == x]  
+Prelude> rightTriangles' 24
+[(6,8,10)]
 ```
