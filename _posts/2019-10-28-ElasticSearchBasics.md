@@ -78,4 +78,25 @@ Replicas: copies of the primary - HA, read throughput
 aggr - keyword
 full text index - text
 
+pagination query
+- scroll: make a snapshot, return in a shorter time
+- from & to & size: scan full index, can search newly added documents
 
+
+
+POST /user/_search
+{
+    "query":{
+        "bool":{
+            "must":{"match" {"university":"Georgia"}},
+            "should":{
+                "bool":{
+                    "must_not":{
+                        "match":{"name":"jack"}
+                    }
+                }
+            }
+        }
+    },
+    "sort":{"_score":"asc"}
+}
