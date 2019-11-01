@@ -18,7 +18,7 @@ SlidingWindow(Time.second(30), Time.second(5))
 
 In the following experiment, E1 and E2 are events of the same slide and create pink TimeWindows. E3 comes in the second slide, then creates blue TimeWindows.
 
-![avatar](../img/FlinkSlidingWindow.png)
+![avatar]({{ site.baseurl }}/img/FlinkSlidingWindow.png)
 
 
 ##TumblingWindow Experiment
