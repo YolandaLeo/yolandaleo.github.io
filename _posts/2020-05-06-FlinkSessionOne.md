@@ -1,3 +1,9 @@
+---
+layout: post
+categories: 'development'
+tag: flink
+title: Flink Sharing Session I
+---
 # Flink Session 1 - Introduction and practice
 ## What's Apache Flink
 
@@ -8,7 +14,7 @@ Apache Flink is a framework and distributed processing engine for stateful compu
 *Some vivid paragraphs are referrenced from this [great article](https://softwaremill.com/windowing-in-big-data-streams-spark-flink-kafka-akka/).*
 
 Processing data in a streaming fashion becomes more and more popular over the more "traditional" way of batch-processing big data sets available as a whole. The focus shifted in the industry: it’s no longer that important how big is your data, it’s much more important how fast you can analyse it and gain insights. That’s why some people are now talking about **fast data** instead of the now old-school **big data**.
-
+<!--more-->
 Borrowing the definition of streaming from [Tyler Akidau](https://twitter.com/takidau):
 
 >[streaming is] a type of data processing engine that is designed with infinite data sets in mind
