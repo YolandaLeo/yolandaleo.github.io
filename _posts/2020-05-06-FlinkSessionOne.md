@@ -4,7 +4,6 @@ categories: 'development'
 tag: flink
 title: Flink Sharing Session I
 ---
-# Flink Session 1 - Introduction and practice
 ## What's Apache Flink
 
 Apache Flink is a framework and distributed processing engine for stateful computations over *unbounded and bounded* data streams. Flink has been designed to run in *all common cluster environments*, perform computations at *in-memory speed* and at any *scale*.

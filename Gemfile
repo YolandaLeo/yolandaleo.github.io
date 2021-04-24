@@ -11,6 +11,7 @@ source 'https://rubygems.org'
 gem 'github-pages', group: :jekyll_plugins
 gem 'jekyll'
 gem 'jekyll-paginate'
-gem 'kramdown'
+gem "kramdown", ">= 2.3.1"
 gem 'pygments.rb'
-gem "nokogiri", ">= 1.8.5"
+gem "nokogiri", ">= 1.11.0"
+gem "rubyzip", ">= 1.3.0"
