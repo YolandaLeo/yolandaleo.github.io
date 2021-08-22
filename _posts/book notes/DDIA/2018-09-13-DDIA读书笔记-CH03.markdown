@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: 'notes'
-tag: DDIA
+tag: book notes, DDIA
 title: "『DDIA』- CH03 Reading Notes"
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 categories: 'algorithm'
-tag: basics
+tag: algorithm & data structure
 title: Fast & Slow Pointers Note
 ---
 The typical algorithm using fast and slow pointers is [LeetCode 141](https://leetcode.com/problems/linked-list-cycle/).
