@@ -1,7 +1,7 @@
 ---
 layout: post
-categories: 'notes'
 tag: DDIA
+categories: booknotes
 title: "『DDIA』- CH07: Transactions Reading Notes"
 ---
 Created to simplify the programming model for applications accessing a database.

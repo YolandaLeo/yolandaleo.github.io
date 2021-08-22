@@ -1,6 +1,6 @@
 ---
 layout: post
-categories: 'development'
+categories: Architecture
 tag: flink
 title: Flink Sharing Session I
 ---

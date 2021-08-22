@@ -1,6 +1,6 @@
 ---
 layout: post
-categories: 'notes'
+categories: Architecture
 tag: flink
 title: "Talk about Data Streaming I"
 ---

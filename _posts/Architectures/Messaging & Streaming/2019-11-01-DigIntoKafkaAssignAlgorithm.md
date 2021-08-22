@@ -1,6 +1,6 @@
 ---
 layout: post
-categories: 'development'
+categories: Architecture
 tag: Kafka
 title: Dig into Kafka Assignment Algorithm
 ---

@@ -1,6 +1,6 @@
 ---
 layout: post
-categories: ['development']
+categories: Architecture
 tag: design
 title: "工作中的设计模式(Draft"
 ---

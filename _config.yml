@@ -1,5 +1,5 @@
 # Site settings
-title: Yolanda's Blog
+title: Meijia Lyu's Blog
 tagline: Always keep mind sharp
 SEOTitle: 美嘉的博客 | Yolanda Blog
 #header-img: img/post-bg-desk.jpg
@@ -45,7 +45,7 @@ category_page: '/blog/categories/'
 
 # About/contact
 author:
-  name: Yolanda
+  name: Meijia
   description: A passionate developer and a continuous learner
   contact:
     linkedin:  https://www.linkedin.com/in/meijia-lyu-5649a1a5/
@@ -64,6 +64,3 @@ nav:
   Github Project: 
     - 'https://github.com/YolandaLeo/yolandaleo.github.io'
 
-# Where are tags and categories displayed
-tag_page: '/blog/tags/'
-category_page: '/blog/categories/'

@@ -1,7 +1,8 @@
 ---
 layout: post
-categories: 'notes'
 tag: DDIA
+categories: booknotes
+
 title: "『DDIA』- CH04 Reading Notes"
 ---
 

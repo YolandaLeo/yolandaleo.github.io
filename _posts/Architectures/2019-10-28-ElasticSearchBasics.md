@@ -1,6 +1,6 @@
 ---
 layout: post
-categories: 'development'
+categories: Architecture
 tag: ElasticSearch
 title: Elastic Search Basics
 ---

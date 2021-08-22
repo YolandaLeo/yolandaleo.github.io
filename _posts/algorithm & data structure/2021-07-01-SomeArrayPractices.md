@@ -1,7 +1,7 @@
 ---
 layout: post
-categories: 'algorithm'
-tag: algorithm & data structure
+categories: Algorithm
+tag: arrays
 title: Some Array Practices
 ---
 ## Generate Array Elements by Rule

@@ -1,7 +1,7 @@
 ---
 layout: post
-categories: 'notes'
 tag: DDIA
+categories: booknotes
 title: "『DDIA』- CH05: Replication Reading Notes"
 ---
 
