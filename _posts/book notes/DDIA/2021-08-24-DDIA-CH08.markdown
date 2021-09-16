@@ -1,0 +1,85 @@
+---
+layout: post
+tag: DDIA
+categories: booknotes
+title: "『DDIA』CH08 - Trouble w/ Distributed Systems"
+---
+
+## Faults and Partial Failures
+In distributed systems, there can be partial failure - some parts of the system that are broken in some unpredictable way, even though other parts of the system are working fine. This nondeterminism and possibility of partial failures is what makes distributed sys‐ tems hard to work with.
+
+A supercomputer handles faults by simply stop the entire cluster workload. A job typically checkpoints its state to duarable storage from time to time. After the faulty node is repaired, the job resumes from the last checkpoint.
+
+Cloud computing is diffrent. Many internet related applications are online, so it is unrealistic to stop the system and repair. Super computers are typically made from specialized hardware, where each node is quite reliable, and nodes communicate through shared memory and remote direct memory access. In geographically distributed deployment, communication most likely goes over the internet which is slow and unreliable compared to local networks. We need to build a reliable system from unreliable components. 
+
+It is important to consider a wide rage of possible faults and to artificially create such situations in your test environment to see what happens. In distributed systems, suspicion, pessimism, and paranoia pay off.
+<!--more-->
+## Unreliable Networks
+The distributed systems we focus here are a bunch of machines connected by network. They share nothing, the only way of communication among them is the network.
+
+if you send a request and expect a response, many things can go wrong:
+* your request may have been lost
+* your request may be waiting in a queue and will be delivered later
+* the remote node may have failed 
+* the remote node may have temporarily stopped responding and will be recovered later
+* the remote node may have processed your request but the response has been lost
+* the remove node may have processed your request but the response has been delayed and will be delivered later
+
+The usual way of handling the impossibility of knowing the reason you haven't received a response is to use timeout. After some time you give up waiting and assume that response is not going to arrive. However, when timeout occurs, you still don't know whether the remote node gets your request or not. You should make experiments for timeouts, and balance between failure detection delay and premature timeouts. Even better, like Cassandra and Akka, timeouts can be automatically adjusted according to observed response time distribution.
+
+Network partitions: when one part of the network is cut off from the rest due to network issues. Your system should handle the fact that whenever any communications happen in the network, they may fail. You do need to know how your systems react to network faults and ensure the system can recover from them.
+
+Many systems need to detect faulty nodes, eg. load balancer, distributed database with single leader replication. But in general, you need to assume you will get no response at all when something has gone wrong.
+
+Circuit-switching networks (like telephone) have a fixed, guaranteed amount of bandwidth is allocated for a call along the entire route of the two callers in which the delay is predictable. However, a TCP connection is different. Data centers use packet-switched protocols (Ethernet and IP) for **bursty traffic**. With careful use of quality of service (QoS, prioritization and scheduling of packets) and admission control (rate-limiting senders), it is possible to emulate circuit switching on packet networks, or provide statistically bounded delay.
+
+## Unreliable Clocks
+In a distributed system, time is a tricky business, because communication is not instantaneous, but due to variable delays in the network, we don’t know how much later. Moreover, each machine on the internet has its own clock, which is an actual hardware device, usually a crystal oscillator. the most commonly used mechanism is the Network Time Protocol (NTP), which allows the computer clock to be adjusted according to the time reported by a group of servers.
+
+Modern computers have at least two different kinds of clocks: a *time-of-day clock* and a *monotonic clock*.
+### time-of-day clock
+It returns the current date and time according to some calendar (also known as wall-clock time). For example, in Java, *System.currentTimeMillis()* returns the number of milliseconds since the epoch (UTC on January 1, 1970, according to the Gregorian calendar, not counting leap sec‐ onds). Time-of-day clocks are usually synchronized with NTP, however, they still have various oddilities. In particular, if the local clock is too far ahead of the NTP server, it may be forcibly reset and appear to jump back to a previous point in time. These jumps, as well as the fact that they often ignore leap seconds, make time-of-day clocks unsuitable for measuring elapsed time.
+
+### monotonic clock
+It is suitable for measuring a duration, for example, in Java, *System.nanoTime()*. The name comes from the fact that they are guaranteed to always move forward (whereas a time-of- day clock may jump back in time). 
+It makes no sense to compare monotonic clock values from two different computers, because they don’t mean the same thing. 
+
+If you use software that requires synchronized clocks, it is essential that you also carefully monitor the clock offsets between all the machines. Any node whose clock drifts too far from the others should be declared dead and removed from the cluster. Such monitoring ensures that you notice the broken clocks before they can cause too much damage.
+
+#### Use case: timestamp for ordering events
+The strategy last write wins(LWW) can cause trouble in multi-leader replication and leaderless databases. Logical clocks, which are based on increamenting counters rather than oscillating quartz crystal, are a safer alternative for ordering events.
+
+Pause of process:
+* JVM stop the world
+* virtual machine being suspended and resumed
+* operating system context switching to another thread
+* waiting for slow dist I/O operations to complete
+* swapping to disk (paging), a simple memory access may result in a page fault that requires a page loaded from disk to memory. The thread is paused when slow I/O takes place.
+
+Also mentioned some approaches to avoid garbage collection pauses.
+
+## Knowledge, Truth and Lies
+The truth is defined by majority. 
+Implementing 'only one' in a distributed system requires care: even if a node believes that it is “the chosen one” (the leader of the partition, the holder of the lock, the request handler of the user who successfully grabbed the username), that doesn’t necessarily mean a quorum of nodes agrees! 
+#### The leader and the lock
+If the client holding the lease is paused for too long, its lease expires. Another client can obtain a lease for the same file, and start writing to the file. When the paused client comes back, it believes (incorrectly) that it still has a valid lease and proceeds to also write to the file. As a result, the clients’ writes clash and corrupt the file.
+#### Fencing tokens
+If ZooKeeper is used as lock service, the transaction ID zxid or the node version cversion can be used as fencing token. Since they are guaranteed to be monotoni‐ cally increasing, they have the required properties。
+#### Byzantine Faults
+Fencing tokens can detect and block a node that is inadvertently acting in error (e.g., because it hasn’t yet found out that its lease has expired). However, if the node delib‐ erately wanted to subvert the system’s guarantees, it could easily do so by sending messages with a fake fencing token.
+A system is Byzantine fault-tolerant if it continues to operate correctly even if some of the nodes are malfunctioning and not obeying the protocol, or if malicious attack‐ ers are interfering with the network. 
+
+Some scenarios like nvalid messages due to hardware issues, software bugs, and misconfiguration. Mechanisms protecting 'lying' can be simple and pragmatic toward better reliability.
+* checksums in the application-level protocol for network packets
+* a publicly accessible application must carefully sanitize any inputs from users
+* NTP clients can be configured with multiple server addresses. The use of multiple servers makes NTP more robust than if it only uses a single server.
+
+#### System Model and Reality
+System models are abstractions that describes what things an algorithm may assume.
+Models for timing: synchronoous model, partially synchronous model, asynchronous model.
+Models for nodes: crash-stop faults, crash-recovery faults, Byzantine (arbitrary) faults.
+To define what it means to be correct for an algorithm, we can describe its properties. They can also be classified into two different kinds: safety and liveness. What distinguishes the two kinds of properties? A giveaway is that liveness properties often include the word “eventually” in their definition. (And yes, you guessed it— eventual consistency is a liveness property) Informally, safety is often informally defined as nothing bad happens, and liveness as something good eventually happens. The actual definitions of safety and liveness are precise and mathematical:
+* If a safety property is violated, we can point at a particular point in time at which it was broken. After a safety property has been violated, the violation cannot be undone—the damage is already done.
+* A liveness property works the other way round: it may not hold at some point in time, but there is always hope that it may be satisfied in the future.
+It helps us deal with difficult system models.
+
